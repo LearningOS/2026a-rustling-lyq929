@@ -1,19 +1,15 @@
 /*
-	single linked list merge
-	This problem requires you to merge two ordered singly linked lists into one ordered singly linked list
+    single linked list merge
+    This problem requires you to merge two ordered singly linked lists into one ordered singly linked list
 */
-// I AM NOT DONE
-
 use std::fmt::{self, Display, Formatter};
 use std::ptr::NonNull;
 use std::vec::*;
-
 #[derive(Debug)]
 struct Node<T> {
     val: T,
     next: Option<NonNull<Node<T>>>,
 }
-
 impl<T> Node<T> {
     fn new(t: T) -> Node<T> {
         Node {
@@ -28,13 +24,11 @@ struct LinkedList<T> {
     start: Option<NonNull<Node<T>>>,
     end: Option<NonNull<Node<T>>>,
 }
-
 impl<T> Default for LinkedList<T> {
     fn default() -> Self {
         Self::new()
     }
 }
-
 impl<T> LinkedList<T> {
     pub fn new() -> Self {
         Self {
@@ -43,7 +37,6 @@ impl<T> LinkedList<T> {
             end: None,
         }
     }
-
     pub fn add(&mut self, obj: T) {
         let mut node = Box::new(Node::new(obj));
         node.next = None;
@@ -55,11 +48,9 @@ impl<T> LinkedList<T> {
         self.end = node_ptr;
         self.length += 1;
     }
-
     pub fn get(&mut self, index: i32) -> Option<&T> {
         self.get_ith_node(self.start, index)
     }
-
     fn get_ith_node(&mut self, node: Option<NonNull<Node<T>>>, index: i32) -> Option<&T> {
         match node {
             None => None,
@@ -69,17 +60,70 @@ impl<T> LinkedList<T> {
             },
         }
     }
-	pub fn merge(list_a:LinkedList<T>,list_b:LinkedList<T>) -> Self
-	{
-		//TODO
-		Self {
-            length: 0,
-            start: None,
-            end: None,
-        }
-	}
-}
+    pub fn merge(mut list_a:LinkedList<T>, mut list_b:LinkedList<T>) -> Self
+    where
+        T: Ord,
+    {
+        let mut merged = LinkedList::new();
+        let mut ptr_a = list_a.start;
+        let mut ptr_b = list_b.start;
 
+        while ptr_a.is_some() && ptr_b.is_some() {
+            let a_node = ptr_a.unwrap();
+            let b_node = ptr_b.unwrap();
+            unsafe {
+                if a_node.as_ref().val <= b_node.as_ref().val {
+                    // take a node
+                    let next_a = a_node.as_ref().next;
+                    merged.append_node(a_node);
+                    ptr_a = next_a;
+                } else {
+                    // take b node
+                    let next_b = b_node.as_ref().next;
+                    merged.append_node(b_node);
+                    ptr_b = next_b;
+                }
+            }
+        }
+        // append remaining nodes
+        while ptr_a.is_some() {
+            let node = ptr_a.unwrap();
+            unsafe {
+                let next = node.as_ref().next;
+                merged.append_node(node);
+                ptr_a = next;
+            }
+        }
+        while ptr_b.is_some() {
+            let node = ptr_b.unwrap();
+            unsafe {
+                let next = node.as_ref().next;
+                merged.append_node(node);
+                ptr_b = next;
+            }
+        }
+        // mark original lists empty (ownership transferred)
+        list_a.start = None;
+        list_a.end = None;
+        list_b.start = None;
+        list_b.end = None;
+        merged
+    }
+
+    // helper: append one raw node pointer into this linked list
+    fn append_node(&mut self, node: NonNull<Node<T>>) {
+        unsafe {
+            (*node.as_ptr()).next = None;
+        }
+        let node_opt = Some(node);
+        match self.end {
+            None => self.start = node_opt,
+            Some(end_ptr) => unsafe { (*end_ptr.as_ptr()).next = node_opt },
+        }
+        self.end = node_opt;
+        self.length += 1;
+    }
+}
 impl<T> Display for LinkedList<T>
 where
     T: Display,
@@ -91,7 +135,6 @@ where
         }
     }
 }
-
 impl<T> Display for Node<T>
 where
     T: Display,
@@ -103,11 +146,9 @@ where
         }
     }
 }
-
 #[cfg(test)]
 mod tests {
     use super::LinkedList;
-
     #[test]
     fn create_numeric_list() {
         let mut list = LinkedList::<i32>::new();
@@ -117,7 +158,6 @@ mod tests {
         println!("Linked List is {}", list);
         assert_eq!(3, list.length);
     }
-
     #[test]
     fn create_string_list() {
         let mut list_str = LinkedList::<String>::new();
@@ -127,47 +167,45 @@ mod tests {
         println!("Linked List is {}", list_str);
         assert_eq!(3, list_str.length);
     }
-
     #[test]
     fn test_merge_linked_list_1() {
-		let mut list_a = LinkedList::<i32>::new();
-		let mut list_b = LinkedList::<i32>::new();
-		let vec_a = vec![1,3,5,7];
-		let vec_b = vec![2,4,6,8];
-		let target_vec = vec![1,2,3,4,5,6,7,8];
-		
-		for i in 0..vec_a.len(){
-			list_a.add(vec_a[i]);
-		}
-		for i in 0..vec_b.len(){
-			list_b.add(vec_b[i]);
-		}
-		println!("list a {} list b {}", list_a,list_b);
-		let mut list_c = LinkedList::<i32>::merge(list_a,list_b);
-		println!("merged List is {}", list_c);
-		for i in 0..target_vec.len(){
-			assert_eq!(target_vec[i],*list_c.get(i as i32).unwrap());
-		}
-	}
-	#[test]
-	fn test_merge_linked_list_2() {
-		let mut list_a = LinkedList::<i32>::new();
-		let mut list_b = LinkedList::<i32>::new();
-		let vec_a = vec![11,33,44,88,89,90,100];
-		let vec_b = vec![1,22,30,45];
-		let target_vec = vec![1,11,22,30,33,44,45,88,89,90,100];
-
-		for i in 0..vec_a.len(){
-			list_a.add(vec_a[i]);
-		}
-		for i in 0..vec_b.len(){
-			list_b.add(vec_b[i]);
-		}
-		println!("list a {} list b {}", list_a,list_b);
-		let mut list_c = LinkedList::<i32>::merge(list_a,list_b);
-		println!("merged List is {}", list_c);
-		for i in 0..target_vec.len(){
-			assert_eq!(target_vec[i],*list_c.get(i as i32).unwrap());
-		}
-	}
+        let mut list_a = LinkedList::<i32>::new();
+        let mut list_b = LinkedList::<i32>::new();
+        let vec_a = vec![1,3,5,7];
+        let vec_b = vec![2,4,6,8];
+        let target_vec = vec![1,2,3,4,5,6,7,8];
+        
+        for i in 0..vec_a.len(){
+            list_a.add(vec_a[i]);
+        }
+        for i in 0..vec_b.len(){
+            list_b.add(vec_b[i]);
+        }
+        println!("list a {} list b {}", list_a,list_b);
+        let mut list_c = LinkedList::<i32>::merge(list_a,list_b);
+        println!("merged List is {}", list_c);
+        for i in 0..target_vec.len(){
+            assert_eq!(target_vec[i],*list_c.get(i as i32).unwrap());
+        }
+    }
+    #[test]
+    fn test_merge_linked_list_2() {
+        let mut list_a = LinkedList::<i32>::new();
+        let mut list_b = LinkedList::<i32>::new();
+        let vec_a = vec![11,33,44,88,89,90,100];
+        let vec_b = vec![1,22,30,45];
+        let target_vec = vec![1,11,22,30,33,44,45,88,89,90,100];
+        for i in 0..vec_a.len(){
+            list_a.add(vec_a[i]);
+        }
+        for i in 0..vec_b.len(){
+            list_b.add(vec_b[i]);
+        }
+        println!("list a {} list b {}", list_a,list_b);
+        let mut list_c = LinkedList::<i32>::merge(list_a,list_b);
+        println!("merged List is {}", list_c);
+        for i in 0..target_vec.len(){
+            assert_eq!(target_vec[i],*list_c.get(i as i32).unwrap());
+        }
+    }
 }
