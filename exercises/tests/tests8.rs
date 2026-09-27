@@ -1,8 +1,9 @@
+// I AM NOT DONE
+
 fn main() {
-    let timestamp = std::time::SystemTime::now()
-        .duration_since(std::time::UNIX_EPOCH)
-        .unwrap()
-        .as_secs();
-    println!("cargo:rustc-env=TEST_FOO={}", timestamp);
-    println!("cargo:rustc-cfg=feature=\"pass\"");
+    #[cfg(feature = "pass")]
+    {
+        return;
+    }
+    panic!("You should pass the --cfg 'feature=\"pass\"' argument to rustc.");
 }
