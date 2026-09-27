@@ -2,7 +2,7 @@
   "schema": 1,
   "courseId": 2084,
   "repository": "LearningOS/2026a-rustling-lyq929",
-  "commit": "1cb584e3a83c9d3aeb58e420ab8981197e25af7a",
+  "commit": "4d0358491e0c1ca530a6418e80bbf2073b10c0ee",
   "score": 108,
   "totalScore": 110,
   "exercises": [
@@ -778,9 +778,9 @@
     }
   ],
   "student": "lyq929",
-  "runId": "36333726096",
+  "runId": "36334526728",
   "runAttempt": "1",
   "upload": {
-    "status": "accepted"
+    "status": "pending"
   }
 }
