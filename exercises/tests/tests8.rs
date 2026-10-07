@@ -1,6 +1,6 @@
-// I AM NOT DONE
 
-fn main() {
+#[test]
+fn test_feature() {
     #[cfg(feature = "pass")]
     {
         return;
