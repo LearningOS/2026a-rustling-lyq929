@@ -2,8 +2,8 @@
   "schema": 1,
   "courseId": 2084,
   "repository": "LearningOS/2026a-rustling-lyq929",
-  "commit": "4d0358491e0c1ca530a6418e80bbf2073b10c0ee",
-  "score": 108,
+  "commit": "97964c35810f71d0cae7726a4add93a94d041990",
+  "score": 110,
   "totalScore": 110,
   "exercises": [
     {
@@ -688,15 +688,15 @@
     {
       "name": "tests7",
       "max": 1,
-      "score": 0,
-      "status": "fail",
+      "score": 1,
+      "status": "pass",
       "exitCode": 0
     },
     {
       "name": "tests8",
       "max": 1,
-      "score": 0,
-      "status": "fail",
+      "score": 1,
+      "status": "pass",
       "exitCode": 0
     },
     {
@@ -778,9 +778,9 @@
     }
   ],
   "student": "lyq929",
-  "runId": "36334526728",
+  "runId": "37614855768",
   "runAttempt": "1",
   "upload": {
-    "status": "accepted"
+    "status": "pending"
   }
 }
